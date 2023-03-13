@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "name": "Hugo - Download & Update",
+  "description": "No description provided",
+  "source_url": false,
+  "guid": "ab71ef76fcca7df7a483d101f7a9518e",
+  "tag_fg_color": "#ffffff",
+  "tag_bg_color": "#000000",
+  "icon": "book",
+  "exported_at": "2023-03-13T13:38:07Z",
+  "agents": [
+    {
+      "type": "Agents::PushoverAgent",
+      "name": "Hugo - Download & Update - 4 - Notify",
+      "disabled": false,
+      "guid": "454e420821e5811231e33ea03704ac60",
+      "options": {
+        "token": "{% credential pushover-token %}",
+        "user": "{% credential pushover-user %}",
+        "message": "Hugo {{title}} is being downloaded",
+        "expected_receive_period_in_days": "15",
+        "title": "Hugo"
+      },
+      "propagate_immediately": true
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "Hugo - Download & Update - 1 - Scrape Website",
+      "disabled": false,
+      "guid": "4d423c9932240db0783350078a6d656b",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "https://github.com/gohugoio/hugo/releases",
+        "type": "html",
+        "mode": "on_change",
+        "extract": {
+          "title": {
+            "xpath": "/html[1]/body[1]/div[1]/div[4]/div[1]/main[1]/turbo-frame[1]/div[1]/div[1]/div[3]/section[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/span[1]/a[1]",
+            "value": "string(.)"
+          }
+        }
+      },
+      "schedule": "every_12h",
+      "keep_events_for": 86400,
+      "propagate_immediately": true
+    },
+    {
+      "type": "Agents::ShellCommandAgent",
+      "name": "Hugo - Download & Update - 3 - Download Latest Release",
+      "disabled": false,
+      "guid": "6531e59629a38c2e33f280d29d25928f",
+      "options": {
+        "path": "/",
+        "command": "cd /files/hugo && curl  -L -O {{url}}",
+        "unbundle": false,
+        "suppress_on_failure": false,
+        "suppress_on_empty_output": false,
+        "expected_update_period_in_days": 1,
+        "url": "{{url}}"
+      },
+      "schedule": "never",
+      "keep_events_for": 21600,
+      "propagate_immediately": true
+    },
+    {
+      "type": "Agents::EventFormattingAgent",
+      "name": "Hugo - Download & Update - 2 - Get URL from RSS Feed",
+      "disabled": false,
+      "guid": "8861888bea6799c41e57723acdfaf18b",
+      "options": {
+        "instructions": {
+          "url": "https://github.com/gohugoio/hugo/releases/download/{{.title}}/hugo_extended_{{.title | remove: 'v'}}_linux-amd64.deb",
+          "title": "{{title}}"
+        },
+        "matchers": [
+
+        ],
+        "mode": "clean"
+      },
+      "keep_events_for": 86400,
+      "propagate_immediately": true
+    }
+  ],
+  "links": [
+    {
+      "source": 1,
+      "receiver": 3
+    },
+    {
+      "source": 3,
+      "receiver": 2
+    },
+    {
+      "source": 3,
+      "receiver": 0
+    }
+  ],
+  "control_links": [
+
+  ]
+}

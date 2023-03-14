@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "name": "Cal Newport, check and download new episodes",
+  "description": "No description provided",
+  "source_url": false,
+  "guid": "f3680b9fe5c4c5ba577789d113a46071",
+  "tag_fg_color": "#ffffff",
+  "tag_bg_color": "#99c1f1",
+  "icon": "book",
+  "exported_at": "2023-03-14T11:58:20Z",
+  "agents": [
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "Cal Newport Podcast - 1 - Scrape RSS Feed",
+      "disabled": false,
+      "guid": "71b7e4d1d6028697a29e050d3a91b320",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "https://feeds.buzzsprout.com/1121972.rss",
+        "type": "xml",
+        "mode": "on_change",
+        "extract": {
+          "url": {
+            "xpath": "//item[1]/enclosure/@url",
+            "value": "."
+          },
+          "title": {
+            "xpath": "//item[1]/title[1]/text()",
+            "value": "."
+          }
+        }
+      },
+      "schedule": "every_12h",
+      "keep_events_for": 1209600,
+      "propagate_immediately": true
+    },
+    {
+      "type": "Agents::PushoverAgent",
+      "name": "Cal Newport Podcast - 3 - Notify ",
+      "disabled": false,
+      "guid": "a19548dfa9dc5f65a731aeee671c9eb0",
+      "options": {
+        "token": "{% credential pushover-token %}",
+        "user": "{% credential pushover-user %}",
+        "message": "{{title}} is being downloaded",
+        "expected_receive_period_in_days": "15",
+        "title": "Cal Newport Podcast"
+      },
+      "propagate_immediately": true
+    },
+    {
+      "type": "Agents::ShellCommandAgent",
+      "name": "Cal Newport Podcast - 2 - Download Episodes",
+      "disabled": false,
+      "guid": "e18d11352a297909dccca1fcb43b4276",
+      "options": {
+        "path": "/",
+        "command": "cd /files/cnp && curl  -L -O {{url}}",
+        "unbundle": false,
+        "suppress_on_failure": false,
+        "suppress_on_empty_output": false,
+        "expected_update_period_in_days": 1,
+        "url": "{{url}}"
+      },
+      "schedule": "never",
+      "keep_events_for": 604800,
+      "propagate_immediately": true
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "receiver": 2
+    },
+    {
+      "source": 0,
+      "receiver": 1
+    }
+  ],
+  "control_links": [
+
+  ]
+}

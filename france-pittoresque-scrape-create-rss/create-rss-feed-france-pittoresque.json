@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "name": "Create RSS feed - France Pittoresque",
+  "description": "No description provided",
+  "source_url": false,
+  "guid": "3554b0219080bc633f1f11ecb70104dd",
+  "tag_fg_color": "#ffffff",
+  "tag_bg_color": "#8ff0a4",
+  "icon": "pencil",
+  "exported_at": "2023-03-15T04:04:00Z",
+  "agents": [
+    {
+      "type": "Agents::DataOutputAgent",
+      "name": "France Pittoresque - 2 - Create RSS feed",
+      "disabled": false,
+      "guid": "3869487514b795c05f9afff6617e57db",
+      "options": {
+        "secrets": [
+          "some-text"
+        ],
+        "expected_receive_period_in_days": 2,
+        "template": {
+          "title": "France Pittoresque as a feed",
+          "description": "This is a feed of daily France Pittoresque articles",
+          "item": {
+            "title": "{{title}}",
+            "description": "{{description}}",
+            "link": "https://www.france-pittoresque.com/{{url}}"
+          }
+        },
+        "ns_media": "true"
+      },
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "France Pittoresque - 1 - Scrape FP Website",
+      "disabled": false,
+      "guid": "f689a626979beca0d5a90ee6a027c87c",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "https://www.france-pittoresque.com/",
+        "type": "html",
+        "mode": "on_change",
+        "extract": {
+          "url": {
+            "xpath": "(//a[@class='pittochro'])[1]/@href",
+            "value": "."
+          },
+          "title": {
+            "xpath": "(//a[@class='pittochro'])[1]//text()",
+            "value": "normalize-space(.)"
+          },
+          "description": {
+            "xpath": "//div[8]//div[3]//div[5]//text()",
+            "value": "."
+          }
+        }
+      },
+      "schedule": "every_1d",
+      "keep_events_for": 172800,
+      "propagate_immediately": false
+    }
+  ],
+  "links": [
+    {
+      "source": 1,
+      "receiver": 0
+    }
+  ],
+  "control_links": [
+
+  ]
+}
